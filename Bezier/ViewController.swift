@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  Bezier
 //
-//  Created by Ramsundar Shandilya on 10/14/15.
+//  Created by Ramsundar Shandilya on 10/12/15.
 //  Copyright © 2015 Y Media Labs. All rights reserved.
 //
 
@@ -10,16 +10,59 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    
+    @IBOutlet weak var firstBezierView: BezierView!
+    
+    let dataPoints = [252, 220, 101, 2, 101, 220, 252]
+    
+    var xAxisPoints : [Double] {
+        var points = [Double]()
+        for i in 0..<dataPoints.count {
+            let val = (Double(i)/6.0) * CGRectGetWidth(self.firstBezierView.frame).f
+            points.append(val)
+        }
+        
+        return points
+    }
+    
+    var yAxisPoints: [Double] {
+        var points = [Double]()
+        for i in dataPoints {
+            let val = (Double(i)/255) * CGRectGetHeight(self.firstBezierView.frame).f
+            points.append(val)
+        }
+        
+        return points
+    }
+    
+    var graphPoints : [CGPoint] {
+        var points = [CGPoint]()
+        for i in 0..<dataPoints.count {
+            let val = CGPoint(x: self.xAxisPoints[i], y: self.yAxisPoints[i])
+            points.append(val)
+        }
+        
+        return points
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        firstBezierView.dataSource = self
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        self.firstBezierView.layoutSubviews()
     }
+}
 
-
+extension ViewController: BezierViewDataSource {
+    
+    func bezierViewDataPoints(bezierView: BezierView) -> [CGPoint] {
+        
+        return graphPoints
+    }
 }
 
