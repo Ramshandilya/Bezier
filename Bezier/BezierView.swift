@@ -15,12 +15,18 @@ protocol BezierViewDataSource: class {
 
 class BezierView: UIView {
    
+    private let kStrokeAnimationKey = "StrokeAnimationKey"
+    private let kFadeAnimationKey = "FadeAnimationKey"
+    
     //MARK: Public members
     weak var dataSource: BezierViewDataSource?
     
     var lineColor = UIColor(red: 233.0/255.0, green: 98.0/255.0, blue: 101.0/255.0, alpha: 1.0)
     
     var animates = true
+    
+    var pointLayers = [CAShapeLayer]()
+    var lineLayer = CAShapeLayer()
     
     //MARK: Private members
     
@@ -36,9 +42,12 @@ class BezierView: UIView {
         self.layer.sublayers?.forEach({ (layer: CALayer) -> () in
             layer.removeFromSuperlayer()
         })
+        pointLayers.removeAll()
         
         drawSmoothLines()
         drawPoints()
+        
+        animateLayers()
     }
     
     private func drawPoints(){
@@ -50,7 +59,7 @@ class BezierView: UIView {
         for point in points {
             
             let circleLayer = CAShapeLayer()
-            circleLayer.bounds = CGRect(x: 0, y: 0, width: 10, height: 10)
+            circleLayer.bounds = CGRect(x: 0, y: 0, width: 12, height: 12)
             circleLayer.path = UIBezierPath(ovalInRect: circleLayer.bounds).CGPath
             circleLayer.fillColor = UIColor(white: 248.0/255.0, alpha: 0.5).CGColor
             circleLayer.position = point
@@ -61,6 +70,11 @@ class BezierView: UIView {
             circleLayer.shadowRadius = 3.0
             
             self.layer.addSublayer(circleLayer)
+            
+            if animates {
+                circleLayer.opacity = 0
+                pointLayers.append(circleLayer)
+            }
         }
     }
     
@@ -87,7 +101,7 @@ class BezierView: UIView {
             }
         }
         
-        let lineLayer = CAShapeLayer()
+        lineLayer = CAShapeLayer()
         lineLayer.path = linePath.CGPath
         lineLayer.fillColor = UIColor.clearColor().CGColor
         lineLayer.strokeColor = lineColor.CGColor
@@ -99,5 +113,50 @@ class BezierView: UIView {
         lineLayer.shadowRadius = 6.0
         
         self.layer.addSublayer(lineLayer)
+        
+        if animates {
+            lineLayer.strokeEnd = 0
+        }
     }
 }
+
+extension BezierView {
+    
+    func animateLayers() {
+        animatePoints()
+        animateLine()
+    }
+    
+    func animatePoints() {
+        
+        var delay = 0.2
+        
+        for point in pointLayers {
+            
+            let fadeAnimation = CABasicAnimation(keyPath: "opacity")
+            fadeAnimation.toValue = 1
+            fadeAnimation.beginTime = CACurrentMediaTime() + delay
+            fadeAnimation.duration = 0.2
+            fadeAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+            fadeAnimation.fillMode = kCAFillModeForwards
+            fadeAnimation.removedOnCompletion = false
+            point.addAnimation(fadeAnimation, forKey: kFadeAnimationKey)
+            
+            delay += 0.15
+        }
+    }
+    
+    func animateLine() {
+        
+        let growAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        growAnimation.toValue = 1
+        growAnimation.beginTime = CACurrentMediaTime() + 0.5
+        growAnimation.duration = 1.5
+        growAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
+        growAnimation.fillMode = kCAFillModeForwards
+        growAnimation.removedOnCompletion = false
+        lineLayer.addAnimation(growAnimation, forKey: kStrokeAnimationKey)
+    }
+    
+}
+
