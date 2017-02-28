@@ -10,13 +10,13 @@ import UIKit
 import Foundation
 
 protocol BezierViewDataSource: class {
-    func bezierViewDataPoints(bezierView: BezierView) -> [CGPoint]
+    func bezierViewDataPoints(_ bezierView: BezierView) -> [CGPoint]
 }
 
 class BezierView: UIView {
    
-    private let kStrokeAnimationKey = "StrokeAnimationKey"
-    private let kFadeAnimationKey = "FadeAnimationKey"
+    fileprivate let kStrokeAnimationKey = "StrokeAnimationKey"
+    fileprivate let kFadeAnimationKey = "FadeAnimationKey"
     
     //MARK: Public members
     weak var dataSource: BezierViewDataSource?
@@ -30,11 +30,11 @@ class BezierView: UIView {
     
     //MARK: Private members
     
-    private var dataPoints: [CGPoint]? {
+    fileprivate var dataPoints: [CGPoint]? {
         return self.dataSource?.bezierViewDataPoints(self)
     }
     
-    private let cubicCurveAlgorithm = CubicCurveAlgorithm()
+    fileprivate let cubicCurveAlgorithm = CubicCurveAlgorithm()
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -50,7 +50,7 @@ class BezierView: UIView {
         animateLayers()
     }
     
-    private func drawPoints(){
+    fileprivate func drawPoints(){
         
         guard let points = dataPoints else {
             return
@@ -60,11 +60,11 @@ class BezierView: UIView {
             
             let circleLayer = CAShapeLayer()
             circleLayer.bounds = CGRect(x: 0, y: 0, width: 12, height: 12)
-            circleLayer.path = UIBezierPath(ovalInRect: circleLayer.bounds).CGPath
-            circleLayer.fillColor = UIColor(white: 248.0/255.0, alpha: 0.5).CGColor
+            circleLayer.path = UIBezierPath(ovalIn: circleLayer.bounds).cgPath
+            circleLayer.fillColor = UIColor(white: 248.0/255.0, alpha: 0.5).cgColor
             circleLayer.position = point
             
-            circleLayer.shadowColor = UIColor.blackColor().CGColor
+            circleLayer.shadowColor = UIColor.black.cgColor
             circleLayer.shadowOffset = CGSize(width: 0, height: 2)
             circleLayer.shadowOpacity = 0.7
             circleLayer.shadowRadius = 3.0
@@ -78,7 +78,7 @@ class BezierView: UIView {
         }
     }
     
-    private func drawSmoothLines() {
+    fileprivate func drawSmoothLines() {
         
         guard let points = dataPoints else {
             return
@@ -89,25 +89,25 @@ class BezierView: UIView {
         
         let linePath = UIBezierPath()
         
-        for var i=0; i<points.count; i++ {
+        for i in 0 ..< points.count {
             
             let point = points[i];
             
             if i==0 {
-                linePath.moveToPoint(point)
+                linePath.move(to: point)
             } else {
                 let segment = controlPoints[i-1]
-                linePath.addCurveToPoint(point, controlPoint1: segment.controlPoint1, controlPoint2: segment.controlPoint2)
+                linePath.addCurve(to: point, controlPoint1: segment.controlPoint1, controlPoint2: segment.controlPoint2)
             }
         }
         
         lineLayer = CAShapeLayer()
-        lineLayer.path = linePath.CGPath
-        lineLayer.fillColor = UIColor.clearColor().CGColor
-        lineLayer.strokeColor = lineColor.CGColor
+        lineLayer.path = linePath.cgPath
+        lineLayer.fillColor = UIColor.clear.cgColor
+        lineLayer.strokeColor = lineColor.cgColor
         lineLayer.lineWidth = 4.0
         
-        lineLayer.shadowColor = UIColor.blackColor().CGColor
+        lineLayer.shadowColor = UIColor.black.cgColor
         lineLayer.shadowOffset = CGSize(width: 0, height: 8)
         lineLayer.shadowOpacity = 0.5
         lineLayer.shadowRadius = 6.0
@@ -139,8 +139,8 @@ extension BezierView {
             fadeAnimation.duration = 0.2
             fadeAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
             fadeAnimation.fillMode = kCAFillModeForwards
-            fadeAnimation.removedOnCompletion = false
-            point.addAnimation(fadeAnimation, forKey: kFadeAnimationKey)
+            fadeAnimation.isRemovedOnCompletion = false
+            point.add(fadeAnimation, forKey: kFadeAnimationKey)
             
             delay += 0.15
         }
@@ -154,8 +154,8 @@ extension BezierView {
         growAnimation.duration = 1.5
         growAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
         growAnimation.fillMode = kCAFillModeForwards
-        growAnimation.removedOnCompletion = false
-        lineLayer.addAnimation(growAnimation, forKey: kStrokeAnimationKey)
+        growAnimation.isRemovedOnCompletion = false
+        lineLayer.add(growAnimation, forKey: kStrokeAnimationKey)
     }
     
 }
