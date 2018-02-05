@@ -4,19 +4,18 @@
 //
 //  Created by Ramsundar Shandilya on 10/12/15.
 //  Copyright © 2015 Y Media Labs. All rights reserved.
-//
+//  Edited and updated by Aaron Halvorsen on 2/5/18.
+//  Copyright © 2018 Root Robotics Inc. All rights reserved.
 
 import Foundation
 import UIKit
 
-struct CubicCurveSegment
-{
+struct CubicCurveSegment {
     let controlPoint1: CGPoint
     let controlPoint2: CGPoint
 }
 
-class CubicCurveAlgorithm
-{
+class CubicCurveAlgorithm {
     private var firstControlPoints: [CGPoint?] = []
     private var secondControlPoints: [CGPoint?] = []
     
@@ -45,7 +44,7 @@ class CubicCurveAlgorithm
             
             secondControlPoints.append(CGPoint(x: P2x, y: P2y))
         } else {
-            firstControlPoints = Array(count: count, repeatedValue: nil)
+            firstControlPoints = Array(repeating: nil, count: count)
             
             var rhsArray = [CGPoint]()
             
@@ -54,13 +53,13 @@ class CubicCurveAlgorithm
             var b = [Double]()
             var c = [Double]()
             
-            for var i=0; i<count; i++ {
+            for i in 0..<count {
                 
                 var rhsValueX: CGFloat = 0
                 var rhsValueY: CGFloat = 0
                 
-                let P0 = dataPoints[i];
-                let P3 = dataPoints[i+1];
+                let P0 = dataPoints[i]
+                let P3 = dataPoints[i+1]
                 
                 if i==0 {
                     a.append(0)
@@ -68,8 +67,8 @@ class CubicCurveAlgorithm
                     c.append(1)
                     
                     //rhs for first segment
-                    rhsValueX = P0.x + 2*P3.x;
-                    rhsValueY = P0.y + 2*P3.y;
+                    rhsValueX = P0.x + 2*P3.x
+                    rhsValueY = P0.y + 2*P3.y
                     
                 } else if i == count-1 {
                     a.append(2)
@@ -77,15 +76,15 @@ class CubicCurveAlgorithm
                     c.append(0)
                     
                     //rhs for last segment
-                    rhsValueX = 8*P0.x + P3.x;
-                    rhsValueY = 8*P0.y + P3.y;
+                    rhsValueX = 8*P0.x + P3.x
+                    rhsValueY = 8*P0.y + P3.y
                 } else {
                     a.append(1)
                     b.append(4)
                     c.append(1)
-
-                    rhsValueX = 4*P0.x + 2*P3.x;
-                    rhsValueY = 4*P0.y + 2*P3.y;
+                    
+                    rhsValueX = 4*P0.x + 2*P3.x
+                    rhsValueY = 4*P0.y + 2*P3.y
                 }
                 
                 rhsArray.append(CGPoint(x: rhsValueX, y: rhsValueY))
@@ -93,7 +92,7 @@ class CubicCurveAlgorithm
             
             //Solve Ax=B. Use Tridiagonal matrix algorithm a.k.a Thomas Algorithm
             
-            for var i=1; i<count; i++ {
+            for i in 1..<count {
                 let rhsValueX = rhsArray[i].x
                 let rhsValueY = rhsArray[i].y
                 
@@ -102,7 +101,7 @@ class CubicCurveAlgorithm
                 
                 let m = a[i]/b[i-1]
                 
-                let b1 = b[i] - m * c[i-1];
+                let b1 = b[i] - m * c[i-1]
                 b[i] = b1
                 
                 let r2x = rhsValueX.f - m * prevRhsValueX.f
@@ -120,7 +119,7 @@ class CubicCurveAlgorithm
             
             firstControlPoints[count-1] = CGPoint(x: lastControlPointX, y: lastControlPointY)
             
-            for var i=count-2; i>=0; --i {
+            for i in (0...(count-2)).reversed() {
                 if let nextControlPoint = firstControlPoints[i+1] {
                     let controlPointX = (rhsArray[i].x.f - c[i] * nextControlPoint.x.f)/b[i]
                     let controlPointY = (rhsArray[i].y.f - c[i] * nextControlPoint.y.f)/b[i]
@@ -132,12 +131,12 @@ class CubicCurveAlgorithm
             
             //Compute second Control Points from first
             
-            for var i=0; i<count; i++ {
+            for i in 0..<count {
                 
                 if i == count-1 {
                     let P3 = dataPoints[i+1]
                     
-                    guard let P1 = firstControlPoints[i] else{
+                    guard let P1 = firstControlPoints[i] else {
                         continue
                     }
                     
@@ -163,10 +162,10 @@ class CubicCurveAlgorithm
         
         var controlPoints = [CubicCurveSegment]()
         
-        for var i=0; i<count; i++ {
+        for i in 0..<count {
             if let firstControlPoint = firstControlPoints[i],
-                secondControlPoint = secondControlPoints[i] {
-               let segment = CubicCurveSegment(controlPoint1: firstControlPoint, controlPoint2: secondControlPoint)
+                let secondControlPoint = secondControlPoints[i] {
+                let segment = CubicCurveSegment(controlPoint1: firstControlPoint, controlPoint2: secondControlPoint)
                 controlPoints.append(segment)
             }
         }
@@ -180,3 +179,4 @@ extension CGFloat {
         return Double(self)
     }
 }
+
