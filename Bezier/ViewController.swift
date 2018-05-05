@@ -18,7 +18,8 @@ class ViewController: UIViewController {
     var xAxisPoints : [Double] {
         var points = [Double]()
         for i in 0..<dataPoints.count {
-            let val = (Double(i)/6.0) * CGRectGetWidth(self.firstBezierView.frame).f
+            
+            let val = (Double(i)/6.0) * self.firstBezierView.frame.width.f
             points.append(val)
         }
         
@@ -28,7 +29,7 @@ class ViewController: UIViewController {
     var yAxisPoints: [Double] {
         var points = [Double]()
         for i in dataPoints {
-            let val = (Double(i)/255) * CGRectGetHeight(self.firstBezierView.frame).f
+            let val = (Double(i)/255) * self.firstBezierView.frame.height.f
             points.append(val)
         }
         
