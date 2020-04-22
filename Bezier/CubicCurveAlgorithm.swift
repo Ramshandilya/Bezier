@@ -50,9 +50,9 @@ class CubicCurveAlgorithm
             var rhsArray = [CGPoint]()
             
             //Array of Coefficients
-            var a = [Double]()
-            var b = [Double]()
-            var c = [Double]()
+            var a = [CGFloat]()
+            var b = [CGFloat]()
+            var c = [CGFloat]()
 			
 			for i in 0..<count {
 				var rhsValueX: CGFloat = 0
@@ -98,34 +98,32 @@ class CubicCurveAlgorithm
 				let prevRhsValueX = rhsArray[i-1].x
 				let prevRhsValueY = rhsArray[i-1].y
 				
-				let m = a[i]/b[i-1]
+				let m = CGFloat(a[i]/b[i-1])
 				
 				let b1 = b[i] - m * c[i-1];
 				b[i] = b1
 				
-				let r2x = rhsValueX.f - m * prevRhsValueX.f
-				let r2y = rhsValueY.f - m * prevRhsValueY.f
+				let r2x = rhsValueX - m * prevRhsValueX
+				let r2y = rhsValueY - m * prevRhsValueY
 				
 				rhsArray[i] = CGPoint(x: r2x, y: r2y)
 			}
             //Get First Control Points
             
             //Last control Point
-            let lastControlPointX = rhsArray[count-1].x.f/b[count-1]
-            let lastControlPointY = rhsArray[count-1].y.f/b[count-1]
+            let lastControlPointX = rhsArray[count-1].x/b[count-1]
+            let lastControlPointY = rhsArray[count-1].y/b[count-1]
             
             firstControlPoints[count-1] = CGPoint(x: lastControlPointX, y: lastControlPointY)
 			
 			for i in (0 ..< count - 1).reversed() {
 				if let nextControlPoint = firstControlPoints[i+1] {
-					let controlPointX = (rhsArray[i].x.f - c[i] * nextControlPoint.x.f)/b[i]
-					let controlPointY = (rhsArray[i].y.f - c[i] * nextControlPoint.y.f)/b[i]
+					let controlPointX = (rhsArray[i].x - c[i] * nextControlPoint.x)/b[i]
+					let controlPointY = (rhsArray[i].y - c[i] * nextControlPoint.y)/b[i]
 					
 					firstControlPoints[i] = CGPoint(x: controlPointX, y: controlPointY)
-					
 				}
 			}
-		
             
             //Compute second Control Points from first
 			
@@ -155,9 +153,7 @@ class CubicCurveAlgorithm
 					
 					secondControlPoints.append(CGPoint(x: controlPointX, y: controlPointY))
 				}
-				
 			}
-
         }
         
         var controlPoints = [CubicCurveSegment]()
@@ -171,11 +167,5 @@ class CubicCurveAlgorithm
 		}
         
         return controlPoints
-    }
-}
-
-extension CGFloat {
-    var f: Double {
-        return Double(self)
     }
 }

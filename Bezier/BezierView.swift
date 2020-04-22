@@ -15,8 +15,8 @@ protocol BezierViewDataSource: class {
 
 class BezierView: UIView {
    
-    private let kStrokeAnimationKey = "StrokeAnimationKey"
-    private let kFadeAnimationKey = "FadeAnimationKey"
+    private let strokeAnimationKey = "StrokeAnimationKey"
+    private let fadeAnimationKey = "FadeAnimationKey"
     
     //MARK: Public members
     weak var dataSource: BezierViewDataSource?
@@ -139,7 +139,7 @@ extension BezierView {
 			fadeAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 			fadeAnimation.fillMode = CAMediaTimingFillMode.forwards
 			fadeAnimation.isRemovedOnCompletion = false
-			point.add(fadeAnimation, forKey: kFadeAnimationKey)
+			point.add(fadeAnimation, forKey: fadeAnimationKey)
             
             delay += 0.15
         }
@@ -154,7 +154,7 @@ extension BezierView {
 		growAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeIn)
 		growAnimation.fillMode = CAMediaTimingFillMode.forwards
 		growAnimation.isRemovedOnCompletion = false
-		lineLayer.add(growAnimation, forKey: kStrokeAnimationKey)
+		lineLayer.add(growAnimation, forKey: strokeAnimationKey)
     }
     
 }

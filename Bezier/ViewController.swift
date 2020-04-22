@@ -60,7 +60,6 @@ class ViewController: UIViewController {
 extension ViewController: BezierViewDataSource {
 	
 	func bezierViewDataPoints(bezierView: BezierView) -> [CGPoint] {
-		
 		return graphPoints
 	}
 }
